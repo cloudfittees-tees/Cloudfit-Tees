@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Cloudfit Tees</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body{margin:0;font-family:Arial;background:#f4f4f4}
+header{background:#111;color:#fff;padding:15px;font-size:22px}
+.products{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:15px;padding:15px}
+.card{background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 4px 8px rgba(0,0,0,.1)}
+.card img{width:100%;height:200px;object-fit:cover}
+.card .info{padding:10px}
+.card h3{margin:5px 0;font-size:16px}
+.price{color:#e60023;font-weight:bold}
+.old{color:#999;text-decoration:line-through;font-size:13px}
+button{width:100%;padding:10px;border:none;background:#111;color:#fff;font-size:15px}
+
+.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.7)}
+.modal-content{background:#fff;margin:5% auto;padding:15px;width:95%;max-width:500px;border-radius:12px}
+.close{float:right;font-size:22px;cursor:pointer}
+.gallery img, .gallery video{width:100%;margin-top:10px;border-radius:10px}
+</style>
+</head>
+
+<body>
+
+<header>Cloudfit Tees</header>
+
+<div class="products" id="products"></div>
+
+<!-- Product Modal -->
+<div class="modal" id="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal()">×</span>
+    <h3 id="mName"></h3>
+    <div class="gallery" id="gallery"></div>
+    <p class="price" id="mPrice"></p>
+    <p class="old" id="mOld"></p>
+  </div>
+</div>
+
+<script>
+let data = JSON.parse(localStorage.getItem("products")) || [];
+let box = document.getElementById("products");
+
+if(data.length===0){
+  box.innerHTML="<p style='padding:15px'>No products available</p>";
+}
+
+data.forEach((p,i)=>{
+  box.innerHTML+=`
+  <div class="card">
+    <img src="${p.images[0]}" onclick="openModal(${i})">
+    <div class="info">
+      <h3>${p.name}</h3>
+      <div class="price">৳ ${p.sellPrice || "-"}</div>
+      ${p.oldPrice?`<div class="old">৳ ${p.oldPrice}</div>`:""}
+    </div>
+    <button onclick="openModal(${i})">View Product</button>
+  </div>`;
+});
+
+function openModal(i){
+  let p=data[i];
+  document.getElementById("modal").style.display="block";
+  document.getElementById("mName").innerText=p.name;
+  document.getElementById("mPrice").innerText="৳ "+(p.sellPrice||"-");
+  document.getElementById("mOld").innerText=p.oldPrice?("৳ "+p.oldPrice):"";
+
+  let g=document.getElementById("gallery");
+  g.innerHTML="";
+
+  p.images.forEach(img=>{
+    g.innerHTML+=`<img src="${img}">`;
+  });
+
+  if(p.video){
+    g.innerHTML+=`<video controls src="${p.video}"></video>`;
+  }
+}
+
+function closeModal(){
+  document.getElementById("modal").style.display="none";
+}
+</script>
+
+</body>
+</html>
